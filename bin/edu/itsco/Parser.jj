@@ -1,0 +1,220 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */options{  static = true;}PARSER_BEGIN(Parser)package edu.itsco;
+
+public class Parser{  public static void main(String args []) throws ParseException  {    Parser parser = new Parser(System.in);
+    System.out.println("Bienvenidos al Compilador (Español)");
+    parser.gramaticaPrincipal();
+    System.out.println("Compilo Correctamente");      }}PARSER_END(Parser)SKIP :{  " "| "\r"| "\t"| "\n"}
+//Palabras Reservadas
+TOKEN: {
+ < ANN: "ann" >
+| < GILBERT: "gilbert" >
+| < MARILLA: "marilla" >
+
+| < JERRY: "jerry" >
+| < COOL: "cool" >
+
+| < BASH: "bash" >
+| < DIANA: "diana" >
+
+| < RUBY: "ruby" >
+| < WILLIAM: "william" >
+| < BILLY: "billy" >
+| < GREEN: "geen" >
+
+| < MAY: "may" >
+
+| < ELIZA: "eliza" >
+| < RACHEL: "rachel" >
+
+| < COMENZAR: "comenzar" >
+}
+
+//Simbolos y Operadores
+TOKEN: {
+ < SUMA: "+" >
+| < RESTA: "-" >
+| < MULTIPLICACION: "*" >
+| < DIVISION: "/" >
+| < RESIDUO: "%" >
+| < IGUAL: "=" >
+
+| < AND: "&&" >
+| < OR: "||" >
+| < NOT: "!" >
+
+| < MAYOR: ">" >
+| < MENOR: "<" >
+
+| < AP: "(" >
+| < CP: ")" >
+
+| < ALL: "{" >
+| < CLL: "}" >
+
+| < PC: ";" >
+| < PP: ":" >
+}
+
+//Tokens Dinamicos
+TOKEN: {
+< #digitos: ["0" - "9"] >
+| < #letras: ["a"-"z","A"-"Z"] >
+| < ID: (<letras>|"_")(<letras>|<digitos>|"_")* >
+
+| < VALOR_ANN: (<digitos>)+ >
+| < VALOR_GILBERT: (<digitos>)+"."(<digitos>)+ >
+| < VALOR_MARILLA: "\"" (~["\""])+ "\"" >
+}
+void gramaticaPrincipal():
+{
+  
+} { 
+  <COMENZAR> <ID> <ALL>
+  gramaticaSentencias()
+  < CLL>}
+
+void gramaticaSentencias(): {
+} {
+  (
+    gramaticaDeclararVariable()
+  | gramaticaCapturar()
+  | gramaticaImprimir()
+  | gramaticaSi()
+  | gramaticaMientras()
+  | gramaticaHacerMientras()
+  | gramaticaCambiar()
+  | gramaticaAsignacion()
+  | gramaticaPara()
+  )+
+ }
+
+void gramaticaDeclararVariable(): {
+} {
+  tipoDato() <ID> [ <IGUAL> valor() ] < PC>
+}
+
+void tipoDato (): {
+} {
+   < ANN > | < GILBERT > | < MARILLA >
+}
+
+void valor (): {
+} {
+    < VALOR_ANN > | < VALOR_GILBERT > | < VALOR_MARILLA> |< ID >
+}
+
+void gramaticaCapturar (): {
+} {
+   < COOL > < AP > < ID > < CP > < PC >
+ }
+
+void gramaticaImprimir (): {
+} {
+    < JERRY > < AP > valor()
+          ( < SUMA > valor() )*    < CP > < PC >
+}
+
+void gramaticaSi(): {
+} {
+   < BASH > < AP > condicion() < CP >
+   < ALL >
+       gramaticaSentencias()
+   < CLL >
+   [< DIANA > < ALL>
+       gramaticaSentencias()
+       < CLL >]
+}
+
+void condicion (): {
+} {
+   evaluacionSimple() (opLogico() evaluacionSimple())*
+ }
+
+void evaluacionSimple(): {
+} {
+   valor() opRelacional () valor()
+ }
+
+void opRelacional(): {
+} {
+    < MAYOR > [< IGUAL >]
+  | < MENOR > [< IGUAL >]
+  | < NOT > < IGUAL >
+  | < IGUAL > < IGUAL >
+}
+
+void opLogico(): {
+} {
+   < AND > | < OR >
+ }
+
+void gramaticaMientras(): {
+} {
+   < ELIZA > < AP > condicion() < CP >
+   < ALL >
+     gramaticaSentencias()
+   < CLL >
+ }
+
+void gramaticaHacerMientras(): {
+} {
+   < RACHEL > < ALL >
+      gramaticaSentencias()
+   < CLL > < ELIZA > < AP > condicion() < CP > < PC >
+ }
+
+void gramaticaCambiar(): {
+} {
+   < RUBY > < AP > < ID > < CP >
+   < ALL >
+   (     < WILLIAM > < VALOR_ANN > < PP > gramaticaSentencias()
+     < BILLY > < PC >
+   )+
+
+   [ < GREEN > gramaticaSentencias() [< BILLY > < PC >] ]
+   < CLL >
+ }
+
+void gramaticaAsignacion (): {
+} {
+   < ID > < IGUAL > operacionSimple ()
+ }
+
+void operacionSimple(): {
+} {
+
+   (
+     valor() | operacionParentesis()
+   )
+   ( operadorAritmetico()
+     (valor() | operacionParentesis()) )*
+  }
+
+void operacionParentesis(): {
+} {
+   < AP > operacionSimple() < CP >
+ }
+
+void operadorAritmetico(): {
+} {
+
+   < SUMA > | < RESTA > | < MULTIPLICACION > | < DIVISION >| < RESIDUO >
+ }
+
+void gramaticaPara(): {
+} {
+     < MAY > < AP > < ID > < IGUAL > valor() < PC > condicion () < PC >
+     < ID > (
+       < SUMA > < SUMA >
+       | < RESTA > < RESTA >
+       | < IGUAL > operacionSimple()
+     ) < CP >
+     < ALL >
+         gramaticaSentencias()
+     < CLL >
+   }            
+
+   
+    
